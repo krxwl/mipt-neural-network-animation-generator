@@ -45,9 +45,10 @@ class StableNormalModel(Model):
             torch_dtype=DTYPE,
             trust_remote_code=True,
             safety_checker=None,
+            device_map="auto",
         )
         assert isinstance(x_start_pipeline, YOSONormalsPipeline)
-        x_start_pipeline.to(DEVICE)
+        # x_start_pipeline.to(DEVICE)
 
         scheduler = HEURI_DDIMScheduler(
             prediction_type="sample",
@@ -63,11 +64,13 @@ class StableNormalModel(Model):
             trust_remote_code=True,
             scheduler=scheduler,
             safety_checker=None,
+            device_map="auto",
         )
+    
         assert isinstance(pipe, StableNormalPipeline)
         pipe.x_start_pipeline = x_start_pipeline
-        pipe.to(DEVICE)
-        pipe.prior.to(DEVICE, DTYPE)
+        # pipe.to(DEVICE)
+        # pipe.prior.to(DEVICE, DTYPE)
 
         self._pipe = pipe
 

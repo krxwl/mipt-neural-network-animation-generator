@@ -49,7 +49,7 @@ class WanTransformerModel(Model):
             quantization_config=quant_config,
             subfolder=self._subfolder,
             torch_dtype=torch.bfloat16,
-            device_map={"": DEVICE},
+            device_map="auto",
         )
 
         # transformer.to(DEVICE)  # type: ignore[arg-type]

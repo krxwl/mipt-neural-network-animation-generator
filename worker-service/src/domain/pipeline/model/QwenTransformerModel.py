@@ -43,7 +43,7 @@ class QwenTransformerModel(Model):
             quantization_config=quant_config,
             subfolder=SUBFOLDER,
             torch_dtype=torch.bfloat16, # остальную математику считаем в этом формате
-            device_map={"": DEVICE},
+            device_map="auto",
         )
 
         transformer.eval()

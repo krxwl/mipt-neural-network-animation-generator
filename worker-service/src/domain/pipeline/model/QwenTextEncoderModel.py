@@ -38,8 +38,9 @@ class QwenTextEncoderModel(Model):
             cache_dir=self._model_dir,
             subfolder=SUBFOLDER,
             torch_dtype=DTYPE,
+            device_map="auto" # чтоб сама знала куда класть
         )
-        self._encoder.to(DEVICE)  # type: ignore[arg-type]
+
         self._encoder.eval()
 
     def unload(self) -> None:
