@@ -4,6 +4,8 @@ from diffusers.models.transformers.transformer_wan import WanTransformer3DModel
 from src.domain.pipeline.model.Model import Model
 from src.domain.worker.device.Device import Device
 
+from transformers import BitsAndBytesConfig
+
 
 GB = 1024 ** 3
 WEIGHTS_GPU_MEM = 28 * GB
@@ -39,13 +41,18 @@ class WanTransformerModel(Model):
         if self._transformer is not None:
             return
 
+        quant_config = BitsAndBytesConfig(load_in_8bit=True)
+
         transformer = WanTransformer3DModel.from_pretrained(
             self._hf_path,
             cache_dir=self._model_dir,
+            quantization_config=quant_config,
             subfolder=self._subfolder,
-            torch_dtype=DTYPE,
+            torch_dtype=torch.bfloat16,
+            device_map={"": DEVICE},
         )
-        transformer.to(DEVICE)  # type: ignore[arg-type]
+
+        # transformer.to(DEVICE)  # type: ignore[arg-type]
         transformer.eval()
         self._transformer = transformer
 

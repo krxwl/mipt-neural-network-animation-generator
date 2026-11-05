@@ -3,6 +3,7 @@ from diffusers.models.transformers.transformer_qwenimage import QwenImageTransfo
 
 from src.domain.pipeline.model.Model import Model
 from src.domain.worker.device.Device import Device
+from transformers import BitsAndBytesConfig
 
 
 GB = 1024 ** 3
@@ -33,13 +34,18 @@ class QwenTransformerModel(Model):
         if self._transformer is not None:
             return
 
+        # веса слоев сжимаются в 8 бит, т е квантизация уменьшает потребление памяти в 2 раза
+        quant_config = BitsAndBytesConfig(load_in_8bit=True)
+
         transformer = QwenImageTransformer2DModel.from_pretrained(
             self._hf_path,
             cache_dir=self._model_dir,
+            quantization_config=quant_config,
             subfolder=SUBFOLDER,
-            torch_dtype=DTYPE,
+            torch_dtype=torch.bfloat16, # остальную математику считаем в этом формате
+            device_map={"": DEVICE},
         )
-        transformer.to(DEVICE)  # type: ignore[arg-type]
+
         transformer.eval()
         self._transformer = transformer
 
