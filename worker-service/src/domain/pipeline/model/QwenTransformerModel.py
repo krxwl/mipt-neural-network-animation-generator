@@ -13,7 +13,7 @@ CPU_MEM = 40 * GB
 
 SUBFOLDER = "transformer"
 
-DEVICE = "cuda"
+DEVICE = "cuda:0"
 DTYPE = torch.bfloat16
 
 
@@ -39,7 +39,16 @@ class QwenTransformerModel(Model):
             subfolder=SUBFOLDER,
             torch_dtype=DTYPE,
         )
-        transformer.to(DEVICE)  # type: ignore[arg-type]
+
+        transformer.enable_group_offload(
+            onload_device=torch.device(DEVICE),
+            offload_device=torch.device("cpu"),
+            offload_type="block_level",
+            use_stream=True,
+            non_blocking=True,
+        )
+
+        # transformer.to(DEVICE)  # type: ignore[arg-type]
         transformer.eval()
         self._transformer = transformer
 

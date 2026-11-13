@@ -19,7 +19,7 @@ CPU_MEM = 8 * GB
 YOSO_REPO_ID = "Stable-X/yoso-normal-v0-3"
 MAIN_REPO_ID = "Stable-X/stable-normal-v0-1"
 
-DEVICE = "cuda"
+DEVICE = "cuda:0"
 DTYPE = torch.float16
 
 
@@ -47,7 +47,9 @@ class StableNormalModel(Model):
             safety_checker=None,
         )
         assert isinstance(x_start_pipeline, YOSONormalsPipeline)
-        x_start_pipeline.to(DEVICE)
+
+        x_start_pipeline.enable_model_cpu_offload(device=torch.device(DEVICE))
+        # x_start_pipeline.to(DEVICE)
 
         scheduler = HEURI_DDIMScheduler(
             prediction_type="sample",
@@ -65,9 +67,11 @@ class StableNormalModel(Model):
             safety_checker=None,
         )
         assert isinstance(pipe, StableNormalPipeline)
+
+        pipe.enable_model_cpu_offload(device=torch.device(DEVICE))
         pipe.x_start_pipeline = x_start_pipeline
-        pipe.to(DEVICE)
-        pipe.prior.to(DEVICE, DTYPE)
+        # pipe.to(DEVICE)
+        # pipe.prior.to(DEVICE, DTYPE)
 
         self._pipe = pipe
 

@@ -1,5 +1,6 @@
 import torch
 from transformers import UMT5EncoderModel
+from diffusers.hooks import apply_group_offloading
 
 from src.domain.pipeline.model.Model import Model
 from src.domain.worker.device.Device import Device
@@ -13,7 +14,7 @@ CPU_MEM = 14 * GB
 
 SUBFOLDER = "text_encoder"
 
-DEVICE = "cuda"
+DEVICE = "cuda:0" # берем 1-ую карту по дефолту
 DTYPE = torch.bfloat16
 
 
@@ -39,7 +40,17 @@ class WanTextEncoderModel(Model):
             subfolder=SUBFOLDER,
             torch_dtype=DTYPE,
         )
-        self._encoder.to(DEVICE)  # type: ignore[arg-type]
+
+        apply_group_offloading(
+            self._encoder,
+            onload_device=torch.device(DEVICE),
+            offload_device=torch.device("cpu"),
+            offload_type="block_level",
+            use_stream=True,
+            non_blocking=True,
+        )
+
+        # self._encoder.to(DEVICE)  # type: ignore[arg-type]
         self._encoder.eval()
 
     def unload(self) -> None:

@@ -11,7 +11,7 @@ ACTIVATIONS_GPU_MEM = 6 * GB
 GPU_MEM = WEIGHTS_GPU_MEM + ACTIVATIONS_GPU_MEM
 CPU_MEM = 28 * GB
 
-DEVICE = "cuda"
+DEVICE = "cuda:0" # по дефолту первую выбираем видеокарту
 DTYPE = torch.bfloat16
 
 
@@ -45,7 +45,17 @@ class WanTransformerModel(Model):
             subfolder=self._subfolder,
             torch_dtype=DTYPE,
         )
-        transformer.to(DEVICE)  # type: ignore[arg-type]
+
+        # офлоадинг по слоям
+        transformer.enable_group_offload(
+            onload_device=torch.device(DEVICE),
+            offload_device=torch.device("cpu"),
+            offload_type="block_level",
+            use_stream=True,
+            non_blocking=True,
+        )
+
+        # transformer.to(DEVICE)  # type: ignore[arg-type]
         transformer.eval()
         self._transformer = transformer
 

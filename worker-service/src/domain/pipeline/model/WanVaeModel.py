@@ -14,7 +14,7 @@ CPU_MEM = 3 * GB
 
 SUBFOLDER = "vae"
 
-DEVICE = "cuda"
+DEVICE = "cuda:0" # по дефолту на 1 видеокарте
 DTYPE = torch.float32
 
 
