@@ -253,6 +253,7 @@ def load_and_configure_transformer() -> tuple[Any, float, float]:
             MODEL_ID,
             subfolder=SUBFOLDER,
             torch_dtype=DTYPE,
+            low_cpu_mem_usage=True,
         )
     except Exception as exc:
         raise SmokeTestError(
