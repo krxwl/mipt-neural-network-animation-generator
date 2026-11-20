@@ -14,8 +14,8 @@ CPU_MEM = 2 * GB
 
 SUBFOLDER = "vae"
 
-DEVICE = "cuda"
-DTYPE = torch.bfloat16
+DEVICE = "cuda:1" # на 2-ую карту временно
+DTYPE = torch.float16
 
 
 class QwenVaeModel(Model):
@@ -91,7 +91,7 @@ class QwenVaeModel(Model):
         latents = latents * latents_std + latents_mean
         out = self._vae.decode(latents, return_dict=False)[0]
         self._device.signal(ModelInferencedEvent(self.id))
-        return out
+        return out.to("cuda:0")
 
     def pipe(self, **_kwargs):
         raise NotImplementedError("Use pipe_encode or pipe_decode")
