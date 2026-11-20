@@ -2,6 +2,8 @@ import torch
 from transformers import Qwen2_5_VLForConditionalGeneration
 from diffusers.hooks import apply_group_offloading
 
+from transformers import BitsAndBytesConfig
+
 from src.domain.pipeline.model.Model import Model
 from src.domain.worker.device.Device import Device
 
@@ -34,35 +36,30 @@ class QwenTextEncoderModel(Model):
         if self._encoder is not None:
             return
 
+        quant_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=DTYPE,
+            bnb_4bit_use_double_quant=True,
+        )
+
         self._encoder = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             self._hf_path,
             cache_dir=self._model_dir,
             subfolder=SUBFOLDER,
             torch_dtype=DTYPE,
+            quantization_config=quant_config,
         )
 
-        for component in (
-            self._encoder.model.visual,
-            self._encoder.model.language_model,
-        ):
-            apply_group_offloading(
-                component,
-                onload_device=torch.device(DEVICE),
-                offload_device=torch.device("cpu"),
-                offload_type="block_level",
-                use_stream=True,
-                non_blocking=True,
-                num_blocks_per_group=1,
-            )
-        #apply_group_offloading(
-        #    self._encoder,
-        #    onload_device=torch.device(DEVICE),
-        #    offload_device=torch.device("cpu"),
-        #    offload_type="block_level",
-        #    use_stream=True,
-        #    non_blocking=True,
-        #    num_blocks_per_group=1,
-        #)
+        apply_group_offloading(
+            self._encoder,
+            onload_device=torch.device(DEVICE),
+            offload_device=torch.device("cpu"),
+            offload_type="block_level",
+            use_stream=True,
+            non_blocking=True,
+            num_blocks_per_group=1,
+        )
 
         # self._encoder.to(DEVICE)  # type: ignore[arg-type]
         self._encoder.eval()
