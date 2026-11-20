@@ -1,6 +1,8 @@
 import torch
 from diffusers.models.transformers.transformer_wan import WanTransformer3DModel
 
+from diffusers import GGUFQuantizationConfig
+
 from src.domain.pipeline.model.Model import Model
 from src.domain.worker.device.Device import Device
 
@@ -17,7 +19,7 @@ DTYPE = torch.bfloat16
 
 class WanTransformerModel(Model):
     def __init__(
-        self, device: Device, model_dir: str, hf_path: str, subfolder: str,
+        self, device: Device, model_dir: str, hf_path: str, subfolder: str, gguf_path: str,
     ) -> None:
         super().__init__(
             id=f"{hf_path}:{subfolder}",
@@ -29,6 +31,7 @@ class WanTransformerModel(Model):
         self._hf_path = hf_path
         self._subfolder = subfolder
         self._transformer: WanTransformer3DModel | None = None
+        self._gguf_path = gguf_path
 
         config = WanTransformer3DModel.load_config(
             hf_path, cache_dir=model_dir, subfolder=subfolder,
@@ -39,13 +42,16 @@ class WanTransformerModel(Model):
         if self._transformer is not None:
             return
 
-        transformer = WanTransformer3DModel.from_pretrained(
-            self._hf_path,
+        transformer = WanTransformer3DModel.from_single_file(
+            self._gguf_path,
+            quantization_config=GGUFQuantizationConfig(
+                compute_dtype=DTYPE
+            ),
+            config=self._hf_path,
             cache_dir=self._model_dir,
             subfolder=self._subfolder,
             torch_dtype=DTYPE,
         )
-
         # офлоадинг по слоям
         transformer.enable_group_offload(
             onload_device=torch.device(DEVICE),

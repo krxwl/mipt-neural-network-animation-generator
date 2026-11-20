@@ -126,10 +126,20 @@ class Wan22ImageToVideoPipeline:
         self._transformer_high = WanTransformerModel(
             device=device, model_dir=model_dir, hf_path=hf_path,
             subfolder=TRANSFORMER_SUBFOLDER,
+            gguf_path=(
+            "https://huggingface.co/bullerwins/"
+            "Wan2.2-I2V-A14B-GGUF/resolve/main/"
+            "wan2.2_i2v_high_noise_14B_Q8_0.gguf"
+            )
         )
         self._transformer_low = WanTransformerModel(
             device=device, model_dir=model_dir, hf_path=hf_path,
             subfolder=TRANSFORMER_2_SUBFOLDER,
+            gguf_path=(
+            "https://huggingface.co/bullerwins/"
+            "Wan2.2-I2V-A14B-GGUF/resolve/main/"
+            "wan2.2_i2v_low_noise_14B_Q8_0.gguf"
+            ),
         )
 
         tokenizer = AutoTokenizer.from_pretrained(
