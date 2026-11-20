@@ -20,6 +20,7 @@ dependencies = [
     "transformers>=5.7.0",
     # Common runtime
     "argcomplete>=3.6.3",
+    "bitsandbytes>=0.46.1",
     "pydantic>=2.13.4",
     "pyyaml>=6.0.3",
     "structlog>=25.5.0",
