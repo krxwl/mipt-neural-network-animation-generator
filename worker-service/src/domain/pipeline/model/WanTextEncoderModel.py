@@ -48,6 +48,7 @@ class WanTextEncoderModel(Model):
             offload_type="block_level",
             use_stream=True,
             non_blocking=True,
+            num_blocks_per_group=1,
         )
 
         # self._encoder.to(DEVICE)  # type: ignore[arg-type]
