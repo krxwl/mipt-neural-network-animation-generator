@@ -17,6 +17,7 @@ from typing import Any
 
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["HF_ENABLE_PARALLEL_LOADING"] = "0"
 
 try:
     import torch
@@ -254,6 +255,9 @@ def load_and_configure_transformer() -> tuple[Any, float, float]:
             subfolder=SUBFOLDER,
             torch_dtype=DTYPE,
             low_cpu_mem_usage=True,
+            offload_state_dict=False,
+            disable_mmap=False,
+            use_safetensors=True,
         )
     except Exception as exc:
         raise SmokeTestError(
