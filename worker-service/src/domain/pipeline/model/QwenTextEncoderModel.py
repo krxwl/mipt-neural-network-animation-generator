@@ -15,7 +15,7 @@ CPU_MEM = 14 * GB
 SUBFOLDER = "text_encoder"
 
 DEVICE = "cuda:0" # на 1-й карте по дефолту
-DTYPE = torch.bfloat16
+DTYPE = torch.float16  # на тесле float16 на норм видюхе будет bfloat16
 
 
 class QwenTextEncoderModel(Model):

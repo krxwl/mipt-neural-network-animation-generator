@@ -1,6 +1,8 @@
 import torch
 from diffusers.models.transformers.transformer_qwenimage import QwenImageTransformer2DModel
 
+from diffusers import GGUFQuantizationConfig
+
 from src.domain.pipeline.model.Model import Model
 from src.domain.worker.device.Device import Device
 
@@ -14,8 +16,13 @@ CPU_MEM = 40 * GB
 SUBFOLDER = "transformer"
 
 DEVICE = "cuda:0"
-DTYPE = torch.bfloat16
+DTYPE = torch.float16
 
+GGUF_PATH = (
+    "https://huggingface.co/QuantStack/"
+    "Qwen-Image-Edit-2509-GGUF/resolve/main/"
+    "Qwen-Image-Edit-2509-Q6_K.gguf"
+)
 
 class QwenTransformerModel(Model):
     def __init__(self, device: Device, model_dir: str, hf_path: str) -> None:
@@ -33,11 +40,15 @@ class QwenTransformerModel(Model):
         if self._transformer is not None:
             return
 
-        transformer = QwenImageTransformer2DModel.from_pretrained(
-            self._hf_path,
+        transformer = QwenImageTransformer2DModel.from_single_file(
+            GGUF_PATH,
+            quantization_config=GGUFQuantizationConfig(
+                compute_dtype=torch.float16,
+            ),
+            config=self._hf_path,
+            subfolder="transformer",
             cache_dir=self._model_dir,
-            subfolder=SUBFOLDER,
-            torch_dtype=DTYPE,
+            torch_dtype=torch.float16,
         )
 
         transformer.enable_group_offload(
