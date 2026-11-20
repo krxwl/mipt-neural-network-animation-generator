@@ -41,15 +41,28 @@ class QwenTextEncoderModel(Model):
             torch_dtype=DTYPE,
         )
 
-        apply_group_offloading(
-            self._encoder,
-            onload_device=torch.device(DEVICE),
-            offload_device=torch.device("cpu"),
-            offload_type="block_level",
-            use_stream=True,
-            non_blocking=True,
-            num_blocks_per_group=1,
-        )
+        for component in (
+            self._encoder.model.visual,
+            self._encoder.model.language_model,
+        ):
+            apply_group_offloading(
+                component,
+                onload_device=torch.device(DEVICE),
+                offload_device=torch.device("cpu"),
+                offload_type="block_level",
+                use_stream=True,
+                non_blocking=True,
+                num_blocks_per_group=1,
+            )
+        #apply_group_offloading(
+        #    self._encoder,
+        #    onload_device=torch.device(DEVICE),
+        #    offload_device=torch.device("cpu"),
+        #    offload_type="block_level",
+        #    use_stream=True,
+        #    non_blocking=True,
+        #    num_blocks_per_group=1,
+        #)
 
         # self._encoder.to(DEVICE)  # type: ignore[arg-type]
         self._encoder.eval()
@@ -86,4 +99,4 @@ class QwenTextEncoderModel(Model):
             image_grid_thw=image_grid_thw,
             output_hidden_states=True,
         )
-        return outputs.hidden_states[-1]
+        return outputs.last_hidden_state
