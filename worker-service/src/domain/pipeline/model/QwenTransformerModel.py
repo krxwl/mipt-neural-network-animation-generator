@@ -20,7 +20,7 @@ DTYPE = torch.float16
 
 GGUF_PATH = (
     "https://huggingface.co/QuantStack/"
-    "Qwen-Image-Edit-2509-GGUF/resolve/main/"
+    "Qwen-Image-Edit-2509-GGUF/blob/main/"
     "Qwen-Image-Edit-2509-Q6_K.gguf"
 )
 
