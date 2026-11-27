@@ -24,6 +24,7 @@ dependencies = [
     "pydantic>=2.13.4",
     "pyyaml>=6.0.3",
     "accelerate>=1.1.0",
+    "gguf>=0.10.0",
     "structlog>=25.5.0",
     "typing-extensions>=4.15.0",
 ]
