@@ -14,7 +14,7 @@ CPU_MEM = 2 * GB
 
 SUBFOLDER = "vae"
 
-DEVICE = "cuda:1" # на 2-ую карту временно
+DEVICE = "cuda:0"
 DTYPE = torch.float16
 
 
