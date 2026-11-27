@@ -58,7 +58,7 @@ class QwenImageEditDeletePipeline:
             result = self._qwen(
                 image=character.image,
                 prompt=prompt,
-                negative_prompt=negative_prompt,
+                negative_prompt=negative_prompt or " ",
                 on_step=_cancel_on_closed(output),
             )
             images = cast(list[Image.Image], result)
