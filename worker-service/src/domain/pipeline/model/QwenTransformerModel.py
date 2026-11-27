@@ -36,6 +36,10 @@ class QwenTransformerModel(Model):
         self._hf_path = hf_path
         self._transformer: QwenImageTransformer2DModel | None = None
 
+    @property
+    def dtype(self) -> torch.dtype:
+        return DTYPE
+
     def load(self) -> None:
         if self._transformer is not None:
             return
@@ -83,10 +87,10 @@ class QwenTransformerModel(Model):
         assert self._transformer is not None
 
         return self._transformer(
-            hidden_states=hidden_states,
+            hidden_states=hidden_states.to(DTYPE),
             timestep=timestep,
             guidance=guidance,
-            encoder_hidden_states=encoder_hidden_states,
+            encoder_hidden_states=encoder_hidden_states.to(DTYPE),
             encoder_hidden_states_mask=encoder_hidden_states_mask,
             img_shapes=img_shapes,
             attention_kwargs=attention_kwargs or {},
