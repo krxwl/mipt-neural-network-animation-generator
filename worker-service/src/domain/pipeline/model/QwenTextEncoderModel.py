@@ -17,7 +17,7 @@ CPU_MEM = 14 * GB
 SUBFOLDER = "text_encoder"
 
 DEVICE = "cuda:0" # на 1-й карте по дефолту
-DTYPE = torch.float16  # на тесле float16 на норм видюхе будет bfloat16
+DTYPE = torch.bfloat16
 
 
 class QwenTextEncoderModel(Model):
@@ -50,16 +50,6 @@ class QwenTextEncoderModel(Model):
             torch_dtype=DTYPE,
             quantization_config=quant_config,
         )
-
-        #apply_group_offloading(
-        #    self._encoder,
-        #    onload_device=torch.device(DEVICE),
-        #    offload_device=torch.device("cpu"),
-        #    offload_type="block_level",
-        #    use_stream=True,
-        #    non_blocking=True,
-        #    num_blocks_per_group=1,
-        #)
 
         self._encoder.to(DEVICE)  # type: ignore[arg-type]
         self._encoder.eval()

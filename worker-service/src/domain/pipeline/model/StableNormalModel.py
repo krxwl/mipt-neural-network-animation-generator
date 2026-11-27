@@ -20,7 +20,7 @@ YOSO_REPO_ID = "Stable-X/yoso-normal-v0-3"
 MAIN_REPO_ID = "Stable-X/stable-normal-v0-1"
 
 DEVICE = "cuda:0"
-DTYPE = torch.float16
+DTYPE = torch.bfloat16
 
 
 class StableNormalModel(Model):
@@ -48,8 +48,7 @@ class StableNormalModel(Model):
         )
         assert isinstance(x_start_pipeline, YOSONormalsPipeline)
 
-        x_start_pipeline.enable_model_cpu_offload(device=torch.device(DEVICE))
-        # x_start_pipeline.to(DEVICE)
+        x_start_pipeline.to(DEVICE)
 
         scheduler = HEURI_DDIMScheduler(
             prediction_type="sample",

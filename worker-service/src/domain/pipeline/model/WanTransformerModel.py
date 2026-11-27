@@ -52,17 +52,8 @@ class WanTransformerModel(Model):
             subfolder=self._subfolder,
             torch_dtype=DTYPE,
         )
-        # офлоадинг по слоям
-        transformer.enable_group_offload(
-            onload_device=torch.device(DEVICE),
-            offload_device=torch.device("cpu"),
-            offload_type="block_level",
-            use_stream=True,
-            non_blocking=True,
-            num_blocks_per_group=1,
-        )
 
-        # transformer.to(DEVICE)  # type: ignore[arg-type]
+        transformer.to(DEVICE)  # type: ignore[arg-type]
         transformer.eval()
         self._transformer = transformer
 

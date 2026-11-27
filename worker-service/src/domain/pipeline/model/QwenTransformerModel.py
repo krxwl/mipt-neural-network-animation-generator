@@ -16,7 +16,7 @@ CPU_MEM = 40 * GB
 SUBFOLDER = "transformer"
 
 DEVICE = "cuda:0"
-DTYPE = torch.float16
+DTYPE = torch.bfloat16
 
 GGUF_PATH = (
     "https://huggingface.co/QuantStack/"
@@ -43,24 +43,15 @@ class QwenTransformerModel(Model):
         transformer = QwenImageTransformer2DModel.from_single_file(
             GGUF_PATH,
             quantization_config=GGUFQuantizationConfig(
-                compute_dtype=torch.float16,
+                compute_dtype=torch.bfloat16,
             ),
             config=self._hf_path,
             subfolder="transformer",
             cache_dir=self._model_dir,
-            torch_dtype=torch.float16,
+            torch_dtype=torch.bfloat16,
         )
 
-        transformer.enable_group_offload(
-            onload_device=torch.device(DEVICE),
-            offload_device=torch.device("cpu"),
-            offload_type="block_level",
-            use_stream=True,
-            non_blocking=True,
-            num_blocks_per_group=1,
-        )
-
-        # transformer.to(DEVICE)  # type: ignore[arg-type]
+        transformer.to(DEVICE)  # type: ignore[arg-type]
         transformer.eval()
         self._transformer = transformer
 
