@@ -15,7 +15,7 @@ CPU_MEM = 2 * GB
 SUBFOLDER = "vae"
 
 DEVICE = "cuda:0"
-DTYPE = torch.float16
+DTYPE = torch.bfloat16
 
 
 class QwenVaeModel(Model):
