@@ -124,12 +124,18 @@ class Wan22ImageToVideoPipeline:
             device=device, model_dir=model_dir, hf_path=hf_path,
         )
         self._transformer_high = WanTransformerModel(
-            device=device, model_dir=model_dir, hf_path=hf_path,
+            device=device,
+            model_dir=model_dir,
+            hf_path=hf_path,
             subfolder=TRANSFORMER_SUBFOLDER,
+            lora_scale=3.0,
         )
         self._transformer_low = WanTransformerModel(
-            device=device, model_dir=model_dir, hf_path=hf_path,
+            device=device,
+            model_dir=model_dir,
+            hf_path=hf_path,
             subfolder=TRANSFORMER_2_SUBFOLDER,
+            lora_scale=1.5,
         )
 
         tokenizer = AutoTokenizer.from_pretrained(
